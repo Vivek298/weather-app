@@ -6,8 +6,8 @@ import humidity_icon from '../assets/humidity.png';
 const WeatherPage = () => {
   const inputRef = useRef();
   const [weatherData, setWeatherData] = useState(null);
-  const [isCelsius, setIsCelsius] = useState(true); // State for temperature unit
-  const [isOnline, setIsOnline] = useState(navigator.onLine); // Track online status
+  const [isCelsius, setIsCelsius] = useState(true); 
+  const [isOnline, setIsOnline] = useState(navigator.onLine); 
 
   const search = async (city) => {
     if (city === '') {
@@ -44,7 +44,6 @@ const WeatherPage = () => {
   useEffect(() => {
     search('London');
 
-    // Handle online/offline status
     const handleOnlineStatus = () => {
       setIsOnline(true);
     };
@@ -62,12 +61,10 @@ const WeatherPage = () => {
     };
   }, []);
 
-  // Function to toggle between Celsius and Fahrenheit
   const toggleTemperatureUnit = () => {
     setIsCelsius((prev) => !prev);
   };
 
-  // Convert temperature to Fahrenheit if isCelsius is false
   const displayedTemperature = isCelsius
     ? `${weatherData?.temperature}°C`
     : `${Math.round((weatherData?.temperature * 9) / 5 + 32)}°F`;
