@@ -7,6 +7,7 @@ const WeatherPage = () => {
   const inputRef = useRef();
   const [weatherData, setWeatherData] = useState(null);
   const [isCelsius, setIsCelsius] = useState(true); // State for temperature unit
+  const [isOnline, setIsOnline] = useState(navigator.onLine); // Track online status
 
   const search = async (city) => {
     if (city === '') {
@@ -42,6 +43,23 @@ const WeatherPage = () => {
 
   useEffect(() => {
     search('London');
+
+    // Handle online/offline status
+    const handleOnlineStatus = () => {
+      setIsOnline(true);
+    };
+
+    const handleOfflineStatus = () => {
+      setIsOnline(false);
+    };
+
+    window.addEventListener('online', handleOnlineStatus);
+    window.addEventListener('offline', handleOfflineStatus);
+
+    return () => {
+      window.removeEventListener('online', handleOnlineStatus);
+      window.removeEventListener('offline', handleOfflineStatus);
+    };
   }, []);
 
   // Function to toggle between Celsius and Fahrenheit
@@ -55,10 +73,17 @@ const WeatherPage = () => {
     : `${Math.round((weatherData?.temperature * 9) / 5 + 32)}°F`;
 
   return (
-    <div className='min-h-screen grid place-items-center bg-purple-100'>
+    <div className='min-h-screen grid place-items-center bg-gray-600'>
       {/* Ensure the div is a complete circle with equal width and height */}
-      <div className='bg-orange-950 w-96 h-96 rounded-full flex flex-col items-center justify-center shadow-lg'>
-        <div className='flex items-center gap-3'>
+      <div className='bg-orange-950 w-96 h-96 rounded-full flex flex-col items-center justify-center shadow-lg relative'>
+        {/* Display an alert when the user is offline */}
+        {!isOnline && (
+          <div className='absolute top-4 bg-red-500 text-white py-2 px-4 rounded-md text-sm shadow-lg'>
+            You are currently offline
+          </div>
+        )}
+        
+        <div className='flex items-center gap-3 mt-12'>
           <input
             ref={inputRef}
             type='text'
@@ -79,7 +104,7 @@ const WeatherPage = () => {
             <p className='text-white text-6xl mt-4'>{displayedTemperature}</p>
             <p className='text-white text-3xl mt-2'>{weatherData.location}</p>
             <p className='text-white text-2xl mt-1 capitalize'>{weatherData.description}</p>
-            <div className='flex justify-between mt-8 w-full text-white'>
+            <div className='flex justify-between mt-8 w-full text-white px-8'>
               <div className='flex items-center gap-3'>
                 <img src={humidity_icon} alt='humidity-icon' className='w-6' />
                 <div>
